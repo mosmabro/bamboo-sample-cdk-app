@@ -1,1 +1,1 @@
-cdk-bamboo-pipeline
+bamboo-sample-cdk-app
