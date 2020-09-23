@@ -15,13 +15,16 @@ do
    artifactHashParameter=$(echo $asset | jq '.data.artifactHashParameter')
    sourceHash=$(echo $asset | jq '.data.sourceHash')
    assetPath=$(sed -e 's/^"//' -e 's/"$//' <<<"$assetPath")
-   echo "{\"ParameterKey\": ${s3BucketParameter}, \"ParameterValue\": \"tempstack342231\"}," >> params.properties
+   echo "{\"ParameterKey\": ${s3BucketParameter}, \"ParameterValue\": \"${bamboo.custom.aws.cfn.stack.resources.bamboo-assets-stack.outputs.MyPipelineAssetsDeploymentBucket}\"}," >> params.properties
    echo "{\"ParameterKey\": ${s3KeyParameter}, \"ParameterValue\": \"${assetPath}.zip||\"}," >> params.properties
    echo "{\"ParameterKey\": ${artifactHashParameter}, \"ParameterValue\": ${sourceHash}}," >> params.properties
-   
-   zip -r "${assetPath}.zip" $assetPath
+   cd ${assetPath}
+   zip -r "${assetPath}.zip" .
+   mv  "${assetPath}.zip" ..
+   cd ..
    echo $assetPath
 done
 echo "]" >> params.properties
-
-
+cat params.properties
+echo "new line"
+cat ${bamboo.build.working.directory}/params.properties
