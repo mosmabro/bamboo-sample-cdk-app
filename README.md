@@ -53,7 +53,7 @@ Deployment plan tasks:
 
 2. Artifact download: that is basically *cdk.out* directory
 
-3. [Bootstrap] AWS CloudFormation Stack: which will bootstrap the deployment environment by creating the required deployment resources. That is basically what `cdk bootstrap` would do to prepare the environment for deploying assets -- for more details check [CDK CLI](https://docs.aws.amazon.com/cdk/latest/guide/cli.html). In this step, I basically create an S3 bucket that will be used to upload generated CloudFormation templates and assets (Lambda Function code) in the following steps.
+3. [Bootstrap] AWS CloudFormation Stack: prepares the deployment environment by creating the required deployment resources. That is basically what `cdk bootstrap` would do to prepare the environment for deploying assets -- for more details check [CDK CLI](https://docs.aws.amazon.com/cdk/latest/guide/cli.html). In this step, I basically create an S3 bucket that will be used to upload generated CloudFormation templates and assets (Lambda Function code) in the following steps.
 
 4. [Publish] Script: reads all assets from **manifest.json** file, zip their folders and generates a CloudFormation parameters files. The script will be found in file `publish.sh` in this repo.
 
