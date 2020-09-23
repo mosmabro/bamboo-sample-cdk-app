@@ -36,7 +36,7 @@ public class PlanSpec {
                             .artifacts(new DownloadItem()
                                     .allArtifacts(true)),
                         new AnyTask(new AtlassianModule("net.utoolity.atlassian.bamboo.tasks-for-aws:aws.cloudformation.stack"))
-                            .description("Bootstrapping the deployment env")
+                            .description("[Bootstrap] preparing the deployment env")
                             .configuration(new MapBuilder()
                                     .put("changeSetDescription", "")
                                     .put("stackPolicyURL", "")
@@ -83,10 +83,10 @@ public class PlanSpec {
                                     .put("updateIfExists", "true")
                                     .build()),
                         new ScriptTask()
-                            .description("Zip files")
+                            .description("[Publish] Zip assets and prepare CF params file")
                             .inlineBody("#!/bin/bash\nassets=$(cat manifest.json | jq '.artifacts.CdkBambooPipelineStack.metadata.\"/CdkBambooPipelineStack\" | map(select(.type | contains (\"aws:cdk:asset\")))')\nassetsCount=$(echo $assets | jq '. | length')\necho \"[\" >> params.properties\nfor (( c=0; c<assetsCount; c++ ))\ndo  \n   if [[ $c -gt 0 ]]\n   then\n    echo \",\" >> params.properties\n   fi \n   asset=$(echo $assets | jq --arg ind $c '.[$ind|tonumber]') \n   assetPath=$(echo $asset | jq '.data.path')\n   s3BucketParameter=$(echo $asset | jq '.data.s3BucketParameter')\n   s3KeyParameter=$(echo $asset | jq '.data.s3KeyParameter')\n   artifactHashParameter=$(echo $asset | jq '.data.artifactHashParameter')\n   sourceHash=$(echo $asset | jq '.data.sourceHash')\n   assetPath=$(sed -e 's/^\"//' -e 's/\"$//' <<<\"$assetPath\")\n   echo \"{\\\"ParameterKey\\\": ${s3BucketParameter}, \\\"ParameterValue\\\": \\\"${bamboo.custom.aws.cfn.stack.resources.bamboo-assets-stack.outputs.MyPipelineAssetsDeploymentBucket}\\\"},\" >> params.properties\n   echo \"{\\\"ParameterKey\\\": ${s3KeyParameter}, \\\"ParameterValue\\\": \\\"${assetPath}.zip||\\\"},\" >> params.properties\n   echo \"{\\\"ParameterKey\\\": ${artifactHashParameter}, \\\"ParameterValue\\\": ${sourceHash}},\" >> params.properties\n   cd ${assetPath}\n   zip -r \"${assetPath}.zip\" .\n   mv  \"${assetPath}.zip\" ..\n   cd ..\n   echo $assetPath\ndone\necho \"]\" >> params.properties\ncat params.properties\necho \"new line\"\ncat ${bamboo.build.working.directory}/params.properties"),
                         new AnyTask(new AtlassianModule("net.utoolity.atlassian.bamboo.tasks-for-aws:aws.s3.object"))
-                            .description("Upload all zip files")
+                            .description("[Publish] Upload assets")
                             .configuration(new MapBuilder()
                                     .put("useAntDefaultExcludes", "true")
                                     .put("useAntPattern", "true")
@@ -127,7 +127,7 @@ public class PlanSpec {
                                     .put("targetObjectKey", "")
                                     .build()),
                         new AnyTask(new AtlassianModule("net.utoolity.atlassian.bamboo.tasks-for-aws:aws.s3.object"))
-                            .description("Upload CDK CloudFormation Stack")
+                            .description("[Deploy] Upload CDK CloudFormation template")
                             .configuration(new MapBuilder()
                                     .put("useAntDefaultExcludes", "true")
                                     .put("useAntPattern", "")
@@ -168,7 +168,7 @@ public class PlanSpec {
                                     .put("targetObjectKey", "")
                                     .build()),
                         new AnyTask(new AtlassianModule("net.utoolity.atlassian.bamboo.tasks-for-aws:aws.s3.object"))
-                            .description("Generate pre-signed URL")
+                            .description("[Deploy] Generate pre-signed URL")
                             .configuration(new MapBuilder()
                                     .put("useAntDefaultExcludes", "true")
                                     .put("useAntPattern", "false")
@@ -209,7 +209,7 @@ public class PlanSpec {
                                     .put("targetObjectKey", "")
                                     .build()),
                         new AnyTask(new AtlassianModule("net.utoolity.atlassian.bamboo.tasks-for-aws:aws.cloudformation.stack"))
-                            .description("deploy CDK CloudFormation stacks")
+                            .description("[Deploy] Deploy CDK CloudFormation template(s)")
                             .configuration(new MapBuilder()
                                     .put("changeSetDescription", "")
                                     .put("stackPolicyURL", "")
