@@ -1,10 +1,14 @@
 # bamboo-sample-cdk-app
 
-## Problem statement
-The project explains how build a pipeline to deploy CDK apps using Atlassian Bamboo pipeline given the below constraints:
+## Overview
+The project explains how to build a pipeline to deploy CDK apps using Atlassian Bamboo pipeline given the below constraints:
 - Deployment needs to be done using CloudFormation
 
-This approach gives greater control over the pipeline stages described in this [RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0049-continuous-delivery.md)
+The benefit of this approach is that it gives greater control over the pipeline stages described in this [RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0049-continuous-delivery.md). However using CDK is much simpler. A typical CDK pipeline would have the following steps:
+1. cdk synth for generating CloudFormation stacks
+2. cdk bootstrap for creating resources required by CDK to deploy in new accounts
+3. cdk-assets to publish assets (note: cdk-assets is still experimental)
+4. cdk deploy --app cdk.out to deploy
 
 ## CDK app
 This repo contains a sample CDK application that creates the following resources:
