@@ -21,7 +21,7 @@ The Lambda Function code is an [asset](https://docs.aws.amazon.com/cdk/latest/gu
 
 Please note that the app is written in Typescript and Lambda function uses NodeJS 10.
 
-The repo also contains sample Bamboo build and deployment plans (Java specs) which will be described below
+The repo also contains sample Bamboo v6.10.4 build and deployment plans (Java specs) which will be described below
 - Bamboo-Java-Specs-Build-Plan.java
 - Bamboo-Java-Specs-Deployment-Plan.java
 
